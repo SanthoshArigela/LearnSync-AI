@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LearnSync AI — Student Mobile Prototype (Sprint 4)</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <style>
+    :root {
+      --primary: #6366F1;
+      --primary-dark: #4F46E5;
+      --secondary: #14B8A6;
+      --bg-light: #F8FAFC;
+      --surface: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+      --success: #10B981;
+      --warning: #F59E0B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #0B0F19;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Student Web App Container (Mobile Viewport 20:9 ratio) */
+    .phone-container {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      max-height: 890px;
+      background-color: var(--bg-light);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+    }
+
+    @media (min-width: 500px) {
+      .phone-container {
+        border-radius: 40px;
+        height: 850px;
+        border: 12px solid #1E293B;
+      }
+    }
+
+    /* Notch & Status Bar */
+    .status-bar {
+      height: 44px;
+      background-color: var(--bg-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 10;
+    }
+
+    .camera-punch {
+      width: 12px;
+      height: 12px;
+      background-color: #000;
+      border-radius: 50%;
+    }
+
+    /* Screen Views */
+    .app-screen {
+      flex: 1;
+      overflow-y: auto;
+      display: none;
+      padding-bottom: 20px;
+    }
+
+    .app-screen.active {
+      display: block;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 68px;
+      background-color: var(--surface);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-style: space-around;
+      align-items: center;
+      z-index: 20;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      gap: 4px;
+      transition: color 0.2s;
+    }
+
+    .nav-item i {
+      font-size: 20px;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    /* Common Card Components */
+    .card-box {
+      background-color: var(--surface);
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .ai-banner {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      border-radius: 24px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    .ai-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .ai-action-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.18);
+      border: none;
+      border-radius: 14px;
+      padding: 10px 4px;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .ai-action-btn i {
+      font-size: 18px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background-color: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Progress bar */
+    .progress-track {
+      height: 8px;
+      background-color: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--primary);
+      border-radius: 4px;
+    }
+
+    /* Chat Messages */
+    .chat-bubble {
+      max-width: 85%;
+      padding: 14px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .chat-user {
+      background-color: var(--primary);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      margin-left: auto;
+    }
+
+    .chat-ai {
+      background-color: white;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-bottom-left-radius: 4px;
+    }
+
+    .mode-chip {
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid var(--border-color);
+      background: white;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .mode-chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="camera-punch"></div>
+      <div>
+        <i class="bi bi-wifi"></i>
+        <i class="bi bi-battery-full"></i>
+      </div>
+    </div>
+
+    <!-- 1. HOME SCREEN -->
+    <div id="screen-home" class="app-screen active" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800;">Good evening, Santhosh 👋</h2>
+          <p style="font-size: 13px; color: var(--text-muted);">Ready to continue learning?</p>
+        </div>
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: white; border: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; cursor: pointer;">
+          <i class="bi bi-bell"></i>
+        </div>
+      </div>
+
+      <!-- AI Tutor Card -->
+      <div class="ai-banner">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="bi bi-stars" style="font-size: 22px;"></i>
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700;">Ask LearnSync AI</h3>
+            <p style="font-size: 12px; opacity: 0.9;">Learn concepts. Clear doubts. Build confidence.</p>
+          </div>
+        </div>
+        <div class="ai-actions">
+          <button class="ai-action-btn" onclick="openScreen('tutor')">
+            <i class="bi bi-chat-text"></i> Ask Question
+          </button>
+          <button class="ai-action-btn" onclick="openScreen('camera')">
+            <i class="bi bi-camera"></i> Scan Question
+          </button>
+          <button class="ai-action-btn" onclick="openScreen('voice')">
+            <i class="bi bi-mic"></i> Ask by Voice
+          </button>
+        </div>
+      </div>
+
+      <!-- Continue Learning Card -->
+      <div class="card-box">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Continue Learning</span>
+          <span style="font-size: 12px; font-weight: 700; color: var(--primary);">68% Done</span>
+        </div>
+        <h4 style="font-size: 17px; font-weight: 800;">Computer Networks</h4>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Current Topic: TCP & UDP</p>
+        <div class="progress-track"><div class="progress-fill" style="width: 68%;"></div></div>
+        <button class="btn-primary" style="margin-top: 14px;" onclick="openScreen('learn')">
+          <i class="bi bi-play-fill"></i> Continue Learning
+        </button>
+      </div>
+
+      <!-- AI Recommendation -->
+      <div style="background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 20px; padding: 16px; margin-top: 16px;">
+        <span style="background: var(--primary); color: white; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 12px;">Recommended for You</span>
+        <h4 style="font-size: 16px; font-weight: 800; margin-top: 8px; color: #1E1B4B;">Revise OSI Model</h4>
+        <p style="font-size: 12px; color: #4338CA; margin-bottom: 12px;">You showed difficulty with Layers 3 and 4 in your recent practice.</p>
+        <button class="btn-primary" onclick="openScreen('tutor')">Start Revision</button>
+      </div>
+    </div>
+
+    <!-- 2. LEARN SCREEN -->
+    <div id="screen-learn" class="app-screen" style="padding: 16px;">
+      <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 14px;">My Learning</h2>
+      <div class="card-box">
+        <h4 style="font-size: 16px; font-weight: 700;">Computer Networks</h4>
+        <p style="font-size: 12px; color: var(--text-muted);">10 Topics • 82% Completed</p>
+        <div class="progress-track"><div class="progress-fill" style="width: 82%;"></div></div>
+        <button class="btn-secondary" style="margin-top: 10px;" onclick="openScreen('tutor')">Continue</button>
+      </div>
+    </div>
+
+    <!-- 3. AI TUTOR SCREEN -->
+    <div id="screen-tutor" class="app-screen" style="padding: 16px; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h2 style="font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+          <i class="bi bi-stars" style="color: var(--primary);"></i> LearnSync AI
+        </h2>
+        <i class="bi bi-x-lg" style="cursor: pointer;" onclick="openScreen('home')"></i>
+      </div>
+
+      <div id="chat-box" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto;">
+        <div class="chat-bubble chat-user">Why does TCP use a three-way handshake?</div>
+        <div class="chat-bubble chat-ai">
+          TCP uses a <b>three-way handshake</b> to establish sequence tracking and socket buffers.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. CAMERA QUESTION SCREEN -->
+    <div id="screen-camera" class="app-screen" style="background: #000; color: white; padding: 16px;">
+      <h3 style="font-size: 16px; font-weight: 700;">Scan a Question</h3>
+      <p style="font-size: 12px; text-align: center; color: #AAA; margin: 10px 0;">Point your camera at a question or learning material.</p>
+      <div style="height: 380px; border: 2px dashed rgba(255,255,255,0.4); border-radius: 20px; display: flex; justify-content: center; align-items: center; background: #1E293B;" onclick="openScreen('tutor')">
+        <span>Tap to simulate Camera Scan</span>
+      </div>
+    </div>
+
+    <!-- 5. ASSESS SCREEN (Sprint 4 Adaptive Assessments) -->
+    <div id="screen-assess" class="app-screen" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800;">AI Assessments</h2>
+          <p style="font-size: 12px; color: var(--text-muted);">Adaptive tests that adjust difficulty based on performance.</p>
+        </div>
+      </div>
+
+      <!-- Adaptive Assessment Config Card -->
+      <div style="background: linear-gradient(135deg, #4F46E5, #6366F1); color: white; border-radius: 20px; padding: 16px; margin-bottom: 16px;">
+        <span style="font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">Adaptive Mode</span>
+        <h3 style="font-size: 18px; font-weight: 800; margin-top: 6px;">Computer Networks — TCP</h3>
+        <p style="font-size: 12px; opacity: 0.9;">Difficulty adjusts automatically (Medium → Hard → Adaptive).</p>
+        <button class="btn-primary" style="margin-top: 12px; background: white; color: var(--primary-dark);" onclick="startAdaptiveQuiz()">Start Adaptive Assessment</button>
+      </div>
+
+      <div class="card-box">
+        <h4 style="font-size: 16px; font-weight: 800;">Data Structures</h4>
+        <p style="font-size: 12px; color: var(--text-muted);">5 Questions • Adaptive • Last Score: 90%</p>
+        <button class="btn-primary" style="margin-top: 10px;" onclick="startAdaptiveQuiz()">Start Assessment</button>
+      </div>
+    </div>
+
+    <!-- 6. ASSESSMENT QUIZ SCREEN -->
+    <div id="screen-assessment-quiz" class="app-screen" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="font-size: 16px; font-weight: 800;">Computer Networks</h3>
+        <span style="font-size: 11px; background: rgba(99,102,241,0.1); color: var(--primary); font-weight: 700; padding: 2px 8px; border-radius: 10px;" id="quiz-diff-badge">Adaptive: Medium</span>
+      </div>
+      <span style="font-size: 12px; font-weight: 700; color: var(--primary);">Question 1 of 5</span>
+      <div class="progress-track"><div class="progress-fill" style="width: 20%;"></div></div>
+
+      <div class="card-box" style="margin-top: 14px;">
+        <h4 style="font-size: 16px; font-weight: 700;" id="quiz-question-text">Which protocol provides reliable, connection-oriented communication?</h4>
+      </div>
+
+      <div class="card-box" style="cursor: pointer;" onclick="selectQuizOpt(this, 'A')">A. UDP</div>
+      <div class="card-box" style="cursor: pointer; border: 2px solid var(--primary); background: rgba(99,102,241,0.05);" onclick="selectQuizOpt(this, 'B')">B. TCP</div>
+      <div class="card-box" style="cursor: pointer;" onclick="selectQuizOpt(this, 'C')">C. IP</div>
+      <div class="card-box" style="cursor: pointer;" onclick="selectQuizOpt(this, 'D')">D. ARP</div>
+
+      <button class="btn-primary" style="margin-top: 16px;" onclick="submitQuizEvaluation()">Submit Assessment</button>
+    </div>
+
+    <!-- 7. ASSESSMENT RESULT SCREEN -->
+    <div id="screen-assessment-result" class="app-screen" style="padding: 16px; text-align: center;">
+      <h2 style="font-size: 20px; font-weight: 800; margin-top: 10px;">Assessment Complete 🎉</h2>
+
+      <div style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary); background: rgba(99,102,241,0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 16px auto;">
+        <span style="font-size: 26px; font-weight: 800; color: var(--primary-dark);">4 / 5</span>
+        <span style="font-size: 12px; font-weight: 700; color: var(--primary);">80% Score</span>
+      </div>
+
+      <span style="font-size: 11px; background: rgba(99,102,241,0.1); color: var(--primary); font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 16px;">
+        Adaptive Path: Medium (✓) → Hard (✗) → Medium (✓)
+      </span>
+
+      <div style="text-align: left;">
+        <h4 style="font-size: 14px; color: var(--success); font-weight: 700;">Strong Areas</h4>
+        <div style="background: rgba(16,185,129,0.1); padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--success); margin: 6px 0;">✓ TCP basics</div>
+
+        <h4 style="font-size: 14px; color: var(--warning); font-weight: 700; margin-top: 14px;">Needs Practice</h4>
+        <div style="background: rgba(245,158,11,0.1); padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--warning); margin: 6px 0;">⚠ TCP connection termination</div>
+      </div>
+
+      <div style="background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 16px; padding: 14px; margin-top: 16px; text-align: left;">
+        <h4 style="font-size: 14px; color: var(--primary); font-weight: 700;">LearnSync AI Recommendation</h4>
+        <p style="font-size: 12px; color: #4338CA; margin-top: 4px;">Revise TCP connection termination before your next assessment.</p>
+        <button class="btn-primary" style="margin-top: 10px;" onclick="openScreen('tutor')">Practice Weak Topic</button>
+        <button class="btn-secondary" style="margin-top: 8px;" onclick="understandMistakeInTutor()">Understand My Mistake with AI Tutor</button>
+      </div>
+    </div>
+
+    <!-- 8. PROGRESS SCREEN -->
+    <div id="screen-progress" class="app-screen" style="padding: 16px;">
+      <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 14px;">Your Learning Progress</h2>
+      <div style="background: linear-gradient(135deg, #3B82F6, #6366F1); color: white; border-radius: 20px; padding: 18px; margin-bottom: 16px;">
+        <span style="font-size: 12px; opacity: 0.8;">Overall Progress</span>
+        <h2 style="font-size: 32px; font-weight: 800;">80%</h2>
+      </div>
+    </div>
+
+    <!-- 9. PROFILE SCREEN -->
+    <div id="screen-profile" class="app-screen" style="padding: 16px;">
+      <h2 style="font-size: 20px; font-weight: 800;">Student Profile</h2>
+      <div class="card-box" style="text-align: center; padding: 20px; margin-top: 14px;">
+        <h3 style="font-size: 18px; font-weight: 800;">Santhosh</h3>
+        <span style="font-size: 12px; background: rgba(99,102,241,0.1); color: var(--primary); font-weight: 700; padding: 2px 10px; border-radius: 12px;">B.Tech CSE</span>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab('home', this)"><i class="bi bi-house"></i><span>Home</span></div>
+      <div class="nav-item" onclick="switchTab('learn', this)"><i class="bi bi-book"></i><span>Learn</span></div>
+      <div class="nav-item" onclick="switchTab('assess', this)"><i class="bi bi-journal-check"></i><span>Assess</span></div>
+      <div class="nav-item" onclick="switchTab('progress', this)"><i class="bi bi-bar-chart"></i><span>Progress</span></div>
+      <div class="nav-item" onclick="switchTab('profile', this)"><i class="bi bi-person"></i><span>Profile</span></div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(screenId, element) {
+      document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('screen-' + screenId).classList.add('active');
+      element.classList.add('active');
+    }
+
+    function openScreen(screenId) {
+      document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + screenId).classList.add('active');
+    }
+
+    function startAdaptiveQuiz() {
+      openScreen('assessment-quiz');
+    }
+
+    function selectQuizOpt(el, key) {
+      document.querySelectorAll('#screen-assessment-quiz .card-box').forEach(c => {
+        c.style.border = '1px solid var(--border-color)';
+        c.style.background = 'white';
+      });
+      el.style.border = '2px solid var(--primary)';
+      el.style.background = 'rgba(99, 102, 241, 0.05)';
+    }
+
+    function submitQuizEvaluation() {
+      openScreen('assessment-result');
+    }
+
+    function understandMistakeInTutor() {
+      const chatBox = document.getElementById('chat-box');
+      const userBubble = document.createElement('div');
+      userBubble.className = 'chat-bubble chat-user';
+      userBubble.innerText = 'Explain why option A (UDP) was incorrect for TCP connection release.';
+      chatBox.appendChild(userBubble);
+
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'chat-bubble chat-ai';
+      aiBubble.innerHTML = '<b>LearnSync AI Explanation:</b><br>TCP connection release requires FIN-ACK control segments. UDP is connectionless and does not manage connection states.';
+      chatBox.appendChild(aiBubble);
+
+      openScreen('tutor');
+    }
+  </script>
+</body>
+</html>

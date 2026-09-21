@@ -1,0 +1,13 @@
+{
+  "name": "learnsync-ai-student-mobile",
+  "version": "1.0.0",
+  "description": "LearnSync AI - Connecting Every Learner to Smarter Learning. Student Mobile Prototype for iQOO.",
+  "scripts": {
+    "start": "npx serve web -p 3000",
+    "dev": "npx serve web -p 3000"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
