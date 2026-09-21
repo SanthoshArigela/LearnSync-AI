@@ -10,6 +10,7 @@ import StudentAttentionTable from '../components/StudentAttentionTable';
 import RecommendationCard from '../components/RecommendationCard';
 import ActivityModal from '../components/ActivityModal';
 import { fetchDashboard } from '../services/teacherApi';
+import { getApiUrl, getWsUrl } from '../config/apiConfig';
 
 export default function DashboardPage({ onNavigate }) {
   const [data, setData] = useState(null);
@@ -26,7 +27,7 @@ export default function DashboardPage({ onNavigate }) {
     fetchDashboard().then(setData);
 
     // Initial fetch of recent collaboration events
-    fetch('http://127.0.0.1:8000/api/collaboration/events')
+    fetch(getApiUrl('/api/collaboration/events'))
       .then((res) => res.ok ? res.json() : [])
       .then((evtData) => {
         if (evtData && evtData.length > 0) setEvents(evtData);
@@ -36,7 +37,7 @@ export default function DashboardPage({ onNavigate }) {
     // Try WebSocket connection to FastAPI collaboration endpoint
     let ws = null;
     try {
-      ws = new WebSocket('ws://127.0.0.1:8000/api/collaboration/ws/teacher/teacher_001');
+      ws = new WebSocket(getWsUrl('/api/collaboration/ws/teacher/teacher_001'));
 
       ws.onopen = () => {
         setIsConnected(true);
@@ -68,7 +69,7 @@ export default function DashboardPage({ onNavigate }) {
 
     // REST Polling fallback interval every 4 seconds if websocket is offline
     const interval = setInterval(() => {
-      fetch('http://127.0.0.1:8000/api/collaboration/events?limit=20')
+      fetch(getApiUrl('/api/collaboration/events?limit=20'))
         .then((res) => res.ok ? res.json() : [])
         .then((evtData) => {
           if (evtData && evtData.length > 0) {
@@ -103,7 +104,7 @@ export default function DashboardPage({ onNavigate }) {
     };
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/collaboration/events', {
+      const res = await fetch(getApiUrl('/api/collaboration/events'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(demoEvt)

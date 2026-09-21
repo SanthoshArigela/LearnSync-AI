@@ -1,4 +1,6 @@
-const BASE_URL = 'http://127.0.0.1:8000/api/teacher';
+import { getApiUrl } from '../config/apiConfig';
+
+const BASE_URL = getApiUrl('/api/teacher');
 
 export async function fetchDashboard() {
   try {

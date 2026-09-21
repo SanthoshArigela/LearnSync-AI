@@ -69,7 +69,7 @@ export default function ProfilePage({ onLogout }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
               <div style={{ padding: '12px 16px', backgroundColor: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#166534' }}>FastAPI Backend Endpoint</span>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#15803D' }}>● Connected (127.0.0.1:8000)</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#15803D' }}>● Connected (Active)</span>
               </div>
 
               <div style={{ padding: '12px 16px', backgroundColor: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

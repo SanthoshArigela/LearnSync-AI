@@ -4,6 +4,8 @@ import ConfirmModal from './ConfirmModal';
 import { useToast } from './Toast';
 import { RefreshIcon, PlusIcon } from './Icons';
 
+import { getApiUrl } from '../config/apiConfig';
+
 export default function ConnectionStatusHeader({ isConnected, isRestFallback, lastSync, onTriggerDemoEvent }) {
   const toast = useToast();
   const [demoActive, setDemoActive] = useState(false);
@@ -25,7 +27,7 @@ export default function ConnectionStatusHeader({ isConnected, isRestFallback, la
   const handleConfirmReset = async () => {
     setIsResetting(true);
     try {
-      await fetch('/api/teacher/demo/reset', { method: 'POST' });
+      await fetch(getApiUrl('/api/teacher/demo/reset'), { method: 'POST' });
       toast.success('Classroom demo state reset to baseline.');
       setTimeout(() => window.location.reload(), 800);
     } catch (err) {

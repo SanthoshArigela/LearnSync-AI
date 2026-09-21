@@ -3,6 +3,7 @@ import { authService } from '../services/authService';
 import Button from './Button';
 import { useToast } from './Toast';
 import ErrorBoundary from './ErrorBoundary';
+import { getApiUrl } from '../config/apiConfig';
 import {
   LogoutIcon,
   SparklesIcon,
@@ -84,7 +85,7 @@ export default function StudentWebAppView({ user, onLogout }) {
     setIsAsking(true);
 
     try {
-      const response = await fetch('/api/tutor/chat', {
+      const response = await fetch(getApiUrl('/api/tutor/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -165,7 +166,7 @@ export default function StudentWebAppView({ user, onLogout }) {
     toast.info('Vision AI Scanner processing problem image…');
 
     try {
-      const response = await fetch('/api/vision/analyze', {
+      const response = await fetch(getApiUrl('/api/vision/analyze'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -212,7 +213,7 @@ export default function StudentWebAppView({ user, onLogout }) {
     toast.info('Transcribing & processing spoken question with Gemini AI...');
 
     try {
-      const res = await fetch('/api/tutor/chat', {
+      const res = await fetch(getApiUrl('/api/tutor/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -344,7 +345,7 @@ export default function StudentWebAppView({ user, onLogout }) {
     toast.info('Preparing your adaptive assessment challenge...');
 
     try {
-      const res = await fetch('/api/assessment/generate', {
+      const res = await fetch(getApiUrl('/api/assessment/generate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -400,7 +401,7 @@ export default function StudentWebAppView({ user, onLogout }) {
     }));
 
     try {
-      const res = await fetch('/api/assessment/evaluate', {
+      const res = await fetch(getApiUrl('/api/assessment/evaluate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

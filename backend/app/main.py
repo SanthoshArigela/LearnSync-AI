@@ -16,10 +16,15 @@ app = FastAPI(
     description="LearnSync AI Backend Services — Connecting Every Learner to Smarter Learning."
 )
 
-# CORS Middleware setup for mobile & browser preview access
+# Environment-driven CORS configuration
+cors_origins_raw = getattr(settings, "CORS_ORIGINS", "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173")
+allowed_origins = [origin.strip() for origin in cors_origins_raw.split(",") if origin.strip()]
+if not allowed_origins or "*" in allowed_origins:
+    allowed_origins = ["*"] if settings.DEBUG else ["http://localhost:5173", "http://localhost:3000"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,12 +40,18 @@ app.include_router(collaboration_router)
 app.include_router(ai_status_router)
 
 
-@app.get("/api/health")
+@app.get("/health", tags=["health"])
+@app.get("/api/health", tags=["health"])
 async def health_check():
+    """
+    Public production health check endpoint.
+    Exposes service status, name, and version without revealing secrets or credentials.
+    """
     return {
         "status": "healthy",
         "service": settings.PROJECT_NAME,
-        "version": settings.VERSION
+        "version": settings.VERSION,
+        "environment": getattr(settings, "ENVIRONMENT", "development")
     }
 
 if __name__ == "__main__":

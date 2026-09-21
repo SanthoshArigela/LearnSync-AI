@@ -1,7 +1,7 @@
-// Frontend authentication service for LearnSync AI Web Platform
+import { getApiUrl } from '../config/apiConfig';
 
 const SESSION_KEY = 'learnsync_session';
-const API_URL = 'http://localhost:8000/api/auth/login';
+const API_URL = getApiUrl('/api/auth/login');
 
 export const authService = {
   async login(email, password, role) {
